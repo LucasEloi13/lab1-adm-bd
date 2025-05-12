@@ -87,18 +87,18 @@ Esse script insere um novo pedido para um produto aleatório e realiza `COMMIT` 
 
 ### ✅ Update Read com Rollback
 
-#### 1. Terminal A: execute o leitor
+#### 1. Terminal A: execute o escritor
 
 ```bash
-python src/scripts/update_reader.py
+python src/scripts/update_writer.py
 ```
 
 Lê o preço de um produto antes e depois de 10s.
 
-#### 2. Terminal B: execute o escritor
+#### 2. Terminal B: execute o leitor
 
 ```bash
-python src/scripts/update_writer.py
+python src/scripts/update_reader.py
 ```
 
 Altera o preço do mesmo produto e executa `ROLLBACK` após 10s.
@@ -107,6 +107,38 @@ Altera o preço do mesmo produto e executa `ROLLBACK` após 10s.
 
 - Se o `reader` ver o preço alterado, houve **non-repeatable read**.
 - Se não, a transação está protegida (dependendo do nível de isolamento).
+
+---
+
+### ✅ Cenários Avançados
+
+Além dos scripts básicos, o projeto inclui cenários avançados para testar situações mais complexas de concorrência e isolamento:
+
+- `src/scripts/cenario_avancado_writer.py`
+- `src/scripts/cenario_avancado_reader.py`
+
+#### Como executar:
+
+1. **Terminal A:**  
+   Execute o leitor avançado:
+   ```bash
+   python src/scripts/cenario_avancado_reader.py
+   ```
+
+2. **Terminal B:**  
+   Execute o escritor avançado:
+   ```bash
+   python src/scripts/cenario_avancado_writer.py
+   ```
+
+Esses scripts simulam operações concorrentes mais sofisticadas, permitindo observar anomalias e comportamentos específicos de acordo com o nível de isolamento configurado.
+
+Se os agregados (COUNT, SUM, AVG) mudarem entre as leituras, houve phantom read ou instabilidade.
+
+O script já imprime:
+
+- Inconsistência detectada entre as leituras
+- Leitura agregada consistente
 
 ---
 
@@ -163,7 +195,9 @@ docker compose -f docker/docker-compose.yml down
         ├── phantom_reader.py
         ├── phantom_writer.py
         ├── update_reader.py
-        └── update_writer.py
+        ├── update_writer.py
+        ├── cenario_avancado_reader.py
+        └── cenario_avancado_writer.py
 ```
 
 ---

@@ -1,5 +1,3 @@
-# src/scripts/ecommerce_update_reader.py
-
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -8,6 +6,11 @@ import logging
 import time
 from db.conexao import conectar
 
+from dotenv import load_dotenv
+load_dotenv()
+iso = os.getenv("DB_ISOLATION_LEVEL")
+
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 def update_reader():
@@ -15,6 +18,7 @@ def update_reader():
     cur = conn.cursor()
     try:
         cur.execute("SET autocommit = 0;")
+        cur.execute(f"SET SESSION TRANSACTION ISOLATION LEVEL {iso};")
         cur.execute("START TRANSACTION;")
 
         produto_id = 1  # fixo para simular leitura antes/depois

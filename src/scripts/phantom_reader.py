@@ -1,5 +1,3 @@
-# src/scripts/ecommerce_phantom_reader.py
-
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -9,6 +7,10 @@ import time
 from random import randint
 from db.conexao import conectar
 
+from dotenv import load_dotenv
+load_dotenv()
+iso = os.getenv("DB_ISOLATION_LEVEL", "READ COMMITTED")
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 def phantom_reader():
@@ -16,9 +18,11 @@ def phantom_reader():
     cur = conn.cursor()
     try:
         cur.execute("SET autocommit = 0;")
+        cur.execute(f"SET SESSION TRANSACTION ISOLATION LEVEL {iso};")
         cur.execute("START TRANSACTION;")
 
-        produto_id = randint(1, 6)
+        # produto_id = randint(1, 6)
+        produto_id = 1  # Para fins de teste, use um ID fixo
         logging.info(f"Iniciando leitura de pedidos do produto {produto_id}...")
 
         cur.execute("SELECT COUNT(*) FROM pedidos WHERE produto_id = %s", (produto_id,))
